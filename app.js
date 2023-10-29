@@ -82,6 +82,25 @@ app.post("/post-job", (req, res) => {
   });
 });
 
+// Endpoint to delete a job by its ID
+app.delete('/delete-job/:jobId', (req, res) => {
+  const jobId = req.params.jobId;
+
+  const deleteQuery = 'DELETE FROM jobs WHERE job_id = ?';
+
+  const request = new sql.Request();
+  request.input('job_id', sql.Int, jobId);
+  request.query(deleteQuery, (err, result) => {
+    if (err) {
+      console.error('Error deleting job:', err);
+      res.status(500).json({ error: 'Failed to delete job' });
+    } else {
+      console.log('Job deleted successfully');
+      res.status(200).json({ message: 'Job deleted successfully' });
+    }
+  });
+});
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
