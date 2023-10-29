@@ -83,20 +83,22 @@ app.post("/post-job", (req, res) => {
 });
 
 // Endpoint to delete a job by its ID
-app.delete('/delete-job/:jobId', (req, res) => {
-  const jobId = req.params.jobId;
+app.delete("/delete-job/:job_id", (req, res) => {
+  const job_id = req.params.job_id;
 
-  const deleteQuery = 'DELETE FROM jobs WHERE job_id = ?';
+  const deleteQuery = "DELETE FROM jobs WHERE job_id = @job_id";
 
   const request = new sql.Request();
-  request.input('job_id', sql.Int, jobId);
+  request.input("job_id", sql.Int, job_id);
+
   request.query(deleteQuery, (err, result) => {
     if (err) {
-      console.error('Error deleting job:', err);
-      res.status(500).json({ error: 'Failed to delete job' });
+      console.error("Error deleting job:", err);
+      res.status(500).json({ error: "Failed to delete job" });
+    } else if (result.rowsAffected[0] === 0) {
+      res.status(404).json({ error: "Job not found" });
     } else {
-      console.log('Job deleted successfully');
-      res.status(200).json({ message: 'Job deleted successfully' });
+      res.json({ message: "Job deleted successfully" });
     }
   });
 });
